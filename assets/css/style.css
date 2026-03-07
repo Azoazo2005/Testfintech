@@ -1,0 +1,10 @@
+/* style.css - FinTech Demo V1 */
+
+.bg-gradient-primary {
+    background: linear-gradient(180deg, #4e73df 10%, #224abe 100%);
+    min-height: 100vh;
+}
+
+.text-gray-900 {
+    color: #3a3b45;
+}
