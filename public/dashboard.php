@@ -1,237 +1,165 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config/constants.php';
 session_start();
-require_once '../core/Auth.php';
-require_once '../core/Wallet.php';
 
-$auth = new Auth();
-if (!$auth->isLoggedIn()) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit;
 }
 
-$userId = $auth->getUserId();
+$db = new Database();
+$user_id = $_SESSION['user_id'];
 $username = $_SESSION['username'];
-$wallet = new Wallet();
-$balance = $wallet->getBalance($userId);
-$history = $wallet->getTransactionHistory($userId, 10);
 
-// Helper function for avatar class
-function getAvatarClass($name) {
-    $map = [
-        'alice' => 'avatar-alice',
-        'bob' => 'avatar-bob',
-        'victim' => 'avatar-victim',
-        'admin' => 'avatar-admin'
-    ];
-    return $map[strtolower($name)] ?? 'avatar-default';
-}
+// Fetch user balance from accounts table
+$sql_balance = "SELECT balance FROM accounts WHERE user_id = '$user_id'";
+$res_balance = $db->query($sql_balance);
+$user_data = $db->fetchOne($res_balance);
+$balance = $user_data['balance'] ?? 0.00;
+
+// Fetch last transactions using TABLE_TRANSACTIONS constant
+$sql_trans = "SELECT * FROM " . TABLE_TRANSACTIONS . " WHERE from_user_id = '$user_id' OR to_user_id = '$user_id' ORDER BY created_at DESC LIMIT 5";
+$recent_transactions_res = $db->query($sql_trans);
+
+$currency = CURRENCY; // Use global currency constant
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - FinTech Demo</title>
+    <title>Dashboard - FinTech Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- ===== Top Navbar ===== -->
-    <nav class="top-navbar">
-        <a href="dashboard.php" class="nav-brand">
-            <div class="nav-brand-icon">⬡</div>
-            <div class="nav-brand-text"><span>FinTech</span>Demo</div>
-        </a>
-        <ul class="nav-links">
-            <li><a href="dashboard.php" class="active">Dashboard</a></li>
-            <li><a href="transfer.php">Transfert</a></li>
-            <li><a href="#" onclick="logout()">Déconnexion</a></li>
-        </ul>
-        <div class="nav-user">
-            <span><?php echo htmlspecialchars($username); ?> (ID: <?php echo $userId; ?>)</span>
 
-        </div>
-    </nav>
-
-    <!-- ===== Main Content ===== -->
-    <div class="main-content">
-        <!-- Left Column -->
-        <div class="left-column">
-            <!-- Welcome / Balance Card -->
-            <div class="card-modern welcome-card">
-                <div class="welcome-header">
-                    <div>
-                        <h1 class="welcome-title">Bienvenue, <?php echo htmlspecialchars($username); ?></h1>
-                        <p class="welcome-userid">User ID: <?php echo $userId; ?></p>
-                    </div>
-                    <div class="account-badge">Compte Actif</div>
-                </div>
-                <div class="wallet-icon-float">
-                    <div class="wallet-cards">
-                        <div class="wc"></div>
-                        <div class="wc"></div>
-                    </div>
-                </div>
-                <div class="balance-section">
-                    <p class="balance-label">Solde actuel</p>
-                    <p class="balance-amount">
-                        <?php echo number_format($balance['balance'], 2, '.', ','); ?>
-                        <span class="currency">€</span>
-                    </p>
-                </div>
-                <a href="transfer.php" class="btn-transfer">
-                    <span>+</span> Nouveau transfert
+<nav class="navbar navbar-pro sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="pro-brand" href="#"><i class="bi bi-snow2 me-2"></i>FINTECH<span class="fw-normal text-pro-muted">_VULNERABLE</span></a>
+        <div class="d-flex align-items-center gap-4">
+            <a href="lab.php" class="text-pro-muted text-decoration-none small fw-bold tracking-widest"><i class="bi bi-mortarboard me-1"></i> LAB GUIDE</a>
+            <span class="text-pro-muted small fw-medium"><i class="bi bi-person-circle me-1"></i> <?php echo htmlspecialchars($username); ?></span>
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+                <a href="admin.php" class="btn btn-pro-outline btn-sm px-3">
+                    <i class="bi bi-shield-check me-1"></i>ADMIN
                 </a>
-            </div>
-
-            <!-- Transactions Card -->
-            <div class="card-modern transactions-card" style="margin-top: 1.5rem;">
-                <div class="transactions-header">
-                    <div class="transactions-title">
-                        <span class="icon">⏱</span>
-                        Historique des transactions
-                    </div>
-                    <a href="#" class="link-view-all">Voir tout</a>
-                </div>
-                <table class="tx-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>De</th>
-                            <th>Vers</th>
-                            <th>Montant</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($history)): ?>
-                        <tr>
-                            <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
-                                Aucune transaction
-                            </td>
-                        </tr>
-                        <?php else: ?>
-                        <?php foreach ($history as $tx): ?>
-                        <tr>
-                            <td><?php echo date('d/m/Y H:i', strtotime($tx['created_at'])); ?></td>
-                            <td>
-                                <div class="user-avatar">
-                                    <div class="avatar-circle <?php echo getAvatarClass($tx['from_username']); ?>">
-                                        <?php echo strtoupper(substr($tx['from_username'], 0, 1)); ?>
-                                    </div>
-                                    <?php echo htmlspecialchars($tx['from_username']); ?>
-                                </div>
-                            </td>
-                            <td><?php echo htmlspecialchars($tx['to_username']); ?></td>
-                            <td>
-                                <?php
-                                $isIncoming = ($tx['to_user_id'] == $userId);
-                                $amountClass = $isIncoming ? 'amount-positive' : 'amount-neutral';
-                                $prefix = $isIncoming ? '+' : '';
-                                ?>
-                                <span class="<?php echo $amountClass; ?>">
-                                    <?php echo $prefix . number_format($tx['amount'], 2); ?> €
-                                </span>
-                            </td>
-                            <td class="tx-description">
-                                <?php
-                                // VULNÉRABILITÉ XSS : Pas d'échappement HTML
-                                echo $tx['description'];
-                                ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Right Column: Vulnerability Lab -->
-        <div class="vuln-panel">
-            <div class="vuln-header">
-                <span class="shield-icon">🛡</span>
-                <h3>Labo Vulnérabilités</h3>
-            </div>
-
-            <!-- IDOR Section -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-red"></span>
-                    <span class="label-text text-red">IDOR - Insecure Direct Object Reference</span>
-                </div>
-                <p class="vuln-desc">Tentative d'accès aux soldes d'autres utilisateurs via manipulation d'ID.</p>
-                <div class="vuln-buttons">
-                    <button class="btn-vuln btn-vuln-green" onclick="viewBalance(1)">Admin (ID: 1)</button>
-                    <button class="btn-vuln btn-vuln-red" onclick="viewBalance(4)">Victime (ID: 4)</button>
-                </div>
-            </div>
-
-            <!-- XSS Section -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-yellow"></span>
-                    <span class="label-text text-yellow">XSS - Cross-Site Scripting</span>
-                </div>
-                <p class="vuln-desc">Injectez un script dans la description du transfert pour tester la sanitization.</p>
-                <div class="code-block">&lt;script&gt;alert('XSS')&lt;/script&gt;</div>
-            </div>
-
-            <!-- Race Condition Section -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-green"></span>
-                    <span class="label-text text-green">Logique Métier & Race Condition</span>
-                </div>
-                <p class="vuln-desc">Tests avancés: montants négatifs ou requêtes concurrentes.</p>
-                <button class="btn-race" onclick="raceConditionAttack()">
-                    ⟳ Attaque Race Condition
-                </button>
-            </div>
-
-            <div class="vuln-footer">Environnement de test isolé</div>
+            <?php endif; ?>
+            <a href="../api/auth/logout.php" class="text-pro-danger text-decoration-none small fw-bold">DÉCONNEXION</a>
         </div>
     </div>
+</nav>
 
-    <script>
-        function viewBalance(userId) {
-            fetch(`../api/wallet/balance.php?user_id=${userId}`)
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(`Solde de ${data.data.full_name}: ${data.data.balance}€`);
-                    } else {
-                        alert('Erreur: ' + data.message);
-                    }
-                })
-                .catch(() => alert('Erreur de connexion'));
-        }
+<div class="container py-5 animate-pro-fadein">
+    <div class="row g-4">
+        <!-- Balance Card -->
+        <div class="col-lg-4">
+            <div class="pro-card h-100 bg-pro-soft border-0">
+                <p class="text-pro-muted text-uppercase small fw-bold mb-4 tracking-widest">SOLDE ACTUEL</p>
+                <h2 class="display-3 fw-bold text-pro-primary mb-2"><?php echo number_format($balance, 0, '.', ' '); ?> <span class="fs-4 fw-normal"><?php echo $currency; ?></span></h2>
+                <div class="d-flex align-items-center text-success small fw-medium">
+                    <i class="bi bi-arrow-up-right me-1"></i>
+                    <span>+2.4% cette semaine</span>
+                </div>
+                <div class="mt-5 d-flex gap-2">
+                    <a href="transfer.php" class="btn-pro-link w-100 py-3 text-center text-decoration-none">TRANSFERT</a>
+                </div>
+            </div>
+        </div>
 
-        function raceConditionAttack() {
-            const amount = 500;
-            const promises = [];
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="pro-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">HISTORIQUE DES ÉCHANGES</h5>
+                    <a href="#" class="btn btn-pro-outline btn-sm">Tout voir</a>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table-pro">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Montant</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            if ($recent_transactions_res) {
+                                while ($row = $db->fetchOne($recent_transactions_res)): 
+                            ?>
+                                <tr>
+                                    <td class="text-pro-muted small"><?php echo date('d/m/Y', strtotime($row['created_at'])); ?></td>
+                                    <td class="fw-medium">
+                                        <?php 
+                                            $dir = ($row['from_user_id'] == $user_id) ? 'SORTIE' : 'ENTRÉE';
+                                            echo "[{$dir}] " . htmlspecialchars($row['description']); 
+                                        ?>
+                                    </td>
+                                    <td class="fw-bold <?php echo ($row['from_user_id'] == $user_id) ? 'text-danger' : 'text-pro-primary'; ?>">
+                                        <?php echo ($row['from_user_id'] == $user_id) ? '-' : '+'; ?>
+                                        <?php echo number_format($row['amount'], 0, '.', ' '); ?> <?php echo $currency; ?>
+                                    </td>
+                                    <td>
+                                        <span class="badge rounded-pill bg-pro-soft text-pro-primary border border-pro px-3"><?php echo ucfirst($row['status']); ?></span>
+                                    </td>
+                                </tr>
+                            <?php endwhile; } else { ?>
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-pro-muted">Aucune transaction récente.</td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Security Lab Insights -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="pro-card border-pro bg-pro-soft small">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="bi bi-shield-lock-fill me-2 text-pro-primary"></i>
+                    <span class="fw-bold tracking-widest text-uppercase">Security Insights - Training Lab</span>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded border-pro h-100">
+                            <h6 class="x-small fw-bold mb-2 text-pro-primary">IDOR VULNERABILITY</h6>
+                            <p class="x-small text-pro-muted mb-0">Le système de transfert utilise un ID utilisateur modifiable dans le formulaire. Un attaquant peut usurper l'identité d'un autre nœud.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded border-pro h-100">
+                            <h6 class="x-small fw-bold mb-2 text-pro-primary">XSS INJECTION</h6>
+                            <p class="x-small text-pro-muted mb-0">Les descriptions de transactions ne sont pas filtrées. Injecter du HTML peut compromettre la session de l'administrateur.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-white rounded border-pro h-100">
+                            <h6 class="x-small fw-bold mb-2 text-pro-primary">RACE CONDITION</h6>
+                            <p class="x-small text-pro-muted mb-0">L'absence de transactions SQL atomiques permet de retirer plus d'argent que le solde réel via des requêtes simultanées.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-            for (let i = 0; i < 5; i++) {
-                const formData = new FormData();
-                formData.append('to_user_id', '2');
-                formData.append('amount', amount);
-                formData.append('description', `Race condition test ${i + 1}`);
-                promises.push(fetch('../api/transfer/send.php', {
-                    method: 'POST',
-                    body: formData
-                }));
-            }
+<footer class="footer mt-auto py-5 border-top border-pro">
+    <div class="container text-center">
+        <p class="text-pro-muted x-small">&copy; 2026 FINTECH_VULNERABLE SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
+    </div>
+</footer>
 
-            Promise.all(promises).then(results => {
-                alert(`${results.length} transferts envoyés simultanément !`);
-                setTimeout(() => location.reload(), 2000);
-            });
-        }
-
-        function logout() {
-            fetch('../api/auth/logout.php').then(() => {
-                window.location.href = 'index.php';
-            });
-        }
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/pro.js"></script>
 </body>
 </html>
