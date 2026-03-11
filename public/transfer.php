@@ -1,422 +1,306 @@
-<?php
-session_start();
-require_once '../core/Auth.php';
-
-$auth = new Auth();
-if (!$auth->isLoggedIn()) {
-    header('Location: index.php');
-    exit;
-}
-
-$userId = $auth->getUserId();
-$username = $_SESSION['username'];
-?>
+<?php 
+require_once __DIR__ . '/../core/Auth.php'; 
+require_once __DIR__ . '/../config/constants.php'; 
+session_start(); 
+$auth = new Auth(); 
+if (!$auth->isLoggedIn()) { 
+    header('Location: index.php'); 
+    exit; 
+} 
+?> 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transfert - FinTech Demo</title>
+    <title>Transfert - Fintech Robuste</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/css/style.css">
-    <style>
-        /* ===== Transfer Page Specific ===== */
-        .transfer-layout {
-            max-width: 1060px;
-            margin: 0 auto;
-            padding: 2.5rem 2rem 2rem;
-            display: grid;
-            grid-template-columns: 1fr 280px;
-            gap: 1.8rem;
-            align-items: start;
-        }
-
-        .page-title {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 2px;
-        }
-
-        .page-subtitle {
-            font-size: 0.82rem;
-            color: var(--text-muted);
-            margin-bottom: 1.2rem;
-        }
-
-        .transfer-form-card {
-            padding: 1.8rem 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.3rem;
-        }
-
-        .form-label-custom {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-        }
-
-        .input-with-icon {
-            position: relative;
-            max-width: 480px;
-        }
-
-        .input-with-icon .input-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            pointer-events: none;
-        }
-
-        .input-with-icon input {
-            width: 100%;
-            padding: 10px 12px 10px 36px;
-            border: 1.5px solid #e8e8f0;
-            border-radius: 8px;
-            font-family: var(--font);
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            background: #fff;
-            transition: var(--transition);
-            outline: none;
-        }
-
-        .input-with-icon input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
-        }
-
-        .input-with-icon input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .input-help {
-            margin-top: 5px;
-            font-size: 0.72rem;
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .textarea-custom {
-            width: 100%;
-            max-width: 480px;
-            padding: 12px;
-            border: 1.5px solid #e8e8f0;
-            border-radius: 8px;
-            font-family: var(--font);
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            background: #fff;
-            transition: var(--transition);
-            outline: none;
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .textarea-custom:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
-        }
-
-        .textarea-custom::placeholder {
-            color: var(--text-muted);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 1.3rem;
-        }
-
-        .btn-send {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 22px;
-            background: var(--primary-gradient);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            font-family: var(--font);
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: 0 4px 14px rgba(63, 81, 181, 0.3);
-        }
-
-        .btn-send:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(63, 81, 181, 0.4);
-        }
-
-        .btn-cancel {
-            display: inline-flex;
-            align-items: center;
-            padding: 10px 20px;
-            background: transparent;
-            color: var(--primary);
-            border: 1.5px solid var(--primary);
-            border-radius: 8px;
-            font-size: 0.82rem;
-            font-weight: 600;
-            font-family: var(--font);
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-        }
-
-        .btn-cancel:hover {
-            background: rgba(63, 81, 181, 0.05);
-        }
-
-        /* Alert message */
-        .alert-modern {
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 1.2rem;
-            display: none;
-        }
-
-        .alert-modern.alert-success {
-            background: var(--green-light);
-            color: #2e7d32;
-            border: 1px solid rgba(76, 175, 80, 0.2);
-            display: block;
-        }
-
-        .alert-modern.alert-danger {
-            background: #ffebee;
-            color: #c62828;
-            border: 1px solid rgba(239, 83, 80, 0.2);
-            display: block;
-        }
-
-        /* Vuln panel specifics for transfer page */
-        .vuln-panel-transfer {
-            padding: 1.4rem;
-        }
-
-        .vuln-panel-transfer .vuln-header {
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.8rem;
-        }
-
-        .vuln-panel-transfer .vuln-header h3 {
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-        }
-
-        .vuln-panel-transfer .vuln-section {
-            margin-bottom: 1.1rem;
-        }
-
-        .vuln-panel-transfer .vuln-label {
-            font-size: 0.78rem;
-        }
-
-        .vuln-panel-transfer .vuln-desc {
-            font-size: 0.72rem;
-        }
-
-        .vuln-step-number {
-            font-weight: 700;
-        }
-
-        .vuln-code-inline {
-            background: rgba(239, 83, 80, 0.15);
-            color: var(--red);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.72rem;
-        }
-
-        .vuln-panel-transfer .btn-race {
-            padding: 10px 16px;
-            font-size: 0.78rem;
-            border-radius: 8px;
-        }
-
-        .vuln-panel-transfer .vuln-footer {
-            margin-top: 1rem;
-            padding-top: 0.8rem;
-            font-size: 0.6rem;
-        }
-
-        @media (max-width: 960px) {
-            .transfer-layout {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- ===== Top Navbar ===== -->
-    <nav class="top-navbar">
-        <a href="dashboard.php" class="nav-brand">
-            <div class="nav-brand-icon">⬡</div>
-            <div class="nav-brand-text"><span>FinTech</span>Demo</div>
-        </a>
-        <ul class="nav-links">
-            <li><a href="dashboard.php">Dashboard</a></li>
-            <li><a href="transfer.php" class="active">Transfert</a></li>
-            <li><a href="#" onclick="logout()">Déconnexion</a></li>
-        </ul>
-        <div class="nav-user">
-            <span><?php echo htmlspecialchars($username); ?> (ID: <?php echo $userId; ?>)</span>
+
+<nav class="navbar navbar-pro sticky-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span></a>
+        <div class="d-flex align-items-center gap-4">
+            <a href="lab.php" class="btn btn-primary btn-sm px-3 shadow-sm border-0" style="background: #2ecc71;">
+                <i class="bi bi-mortarboard-fill me-1"></i> SECURITY LAB
+            </a>
+            <a href="dashboard.php" class="text-pro-muted text-decoration-none small fw-bold">DASHBOARD</a>
+            <a href="../api/auth/logout.php" class="text-pro-danger text-decoration-none small fw-bold">DÉCONNEXION</a>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <!-- ===== Main Content ===== -->
-    <div class="transfer-layout">
-        <!-- Left Column -->
-        <div class="left-column">
-            <h1 class="page-title">Nouveau transfert</h1>
-            <p class="page-subtitle">Effectuez un virement sécurisé vers un autre compte.</p>
-
-            <div class="card-modern transfer-form-card">
-                <div id="message" class="alert-modern"></div>
+<div class="container py-5 animate-pro-fadein">
+    <div class="row g-4 justify-content-center">
+        <!-- New Transfer -->
+        <div class="col-lg-7">
+            <div class="pro-card h-100">
+                <h5 class="fw-bold mb-4"><i class="bi bi-send-fill text-pro-primary me-2"></i>OPÉRATION DE TRANSFERT SÉCURISÉE</h5>
+                
+                <div id="message" class="alert small mb-4" style="display: none;"></div>
 
                 <form id="transferForm">
-                    <div class="form-group">
-                        <label class="form-label-custom">ID destinataire</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon">👤</span>
-                            <input type="number" id="to_user_id" name="to_user_id" placeholder="Ex: 2" required>
+                    <input type="hidden" name="method_name" id="method_name" value="Orange Money">
+                    <div class="form-group-pro">
+                        <label class="form-label-pro">Méthode de Paiement</label>
+                        <div class="d-flex gap-2 flex-wrap mb-3">
+                            <input type="radio" class="btn-check" name="method" id="method1" checked onclick="document.getElementById('method_name').value='Orange Money'">
+                            <label class="btn btn-pro-outline px-3 py-2 text-pro-muted" for="method1">
+                                <i class="bi bi-phone me-1"></i> Orange Money
+                            </label>
+                            
+                            <input type="radio" class="btn-check" name="method" id="method2" onclick="document.getElementById('method_name').value='Wave'">
+                            <label class="btn btn-pro-outline px-3 py-2 text-pro-muted" for="method2">
+                                <i class="bi bi-water me-1"></i> Wave
+                            </label>
+
+                            <input type="radio" class="btn-check" name="method" id="method3" onclick="document.getElementById('method_name').value='Virement'">
+                            <label class="btn btn-pro-outline px-3 py-2 text-pro-muted" for="method3">
+                                <i class="bi bi-bank me-1"></i> Transfert Bancaire
+                            </label>
                         </div>
-                        <p class="input-help">IDs disponibles : 1 (admin), 2 (alice), 3 (bob), 4 (victim)</p>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label-custom">Montant (€)</label>
-                        <div class="input-with-icon">
-                            <span class="input-icon">€</span>
-                            <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group-pro">
+                                <label class="form-label-pro">ID Bénéficiaire</label>
+                                <input type="number" id="to_user_id" name="to_user_id" class="form-control-pro" placeholder="Ex: 2" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group-pro">
+                                <label class="form-label-pro">Montant (<?php echo CURRENCY; ?>)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-pro text-pro-muted"><?php echo CURRENCY; ?></span>
+                                    <input type="number" id="amount" name="amount" step="1" class="form-control-pro" placeholder="0" required oninput="updateFeeDisplay()">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label-custom">Description</label>
-                        <textarea class="textarea-custom" id="description" name="description" placeholder="Motif du virement..."></textarea>
+                    <div class="form-group-pro mb-4">
+                        <label class="form-label-pro">Motif de la Transaction</label>
+                        <input type="text" id="description" name="description" class="form-control-pro" placeholder="Description courte">
                     </div>
 
-                    <!-- VULNÉRABILITÉ : Champ caché modifiable -->
-                    <input type="hidden" name="from_user_id" value="<?php echo $userId; ?>">
+                    <div class="bg-pro-soft p-3 rounded-pro mb-4">
+                        <div class="d-flex justify-content-between x-small mb-1">
+                            <span>Frais de service (1%):</span>
+                            <span id="fee_display">0 <?php echo CURRENCY; ?></span>
+                        </div>
+                        <div class="d-flex justify-content-between fw-bold small">
+                            <span>Total à débiter:</span>
+                            <span id="total_display" class="text-pro-primary">0 <?php echo CURRENCY; ?></span>
+                        </div>
+                    </div>
 
-                    <div class="form-actions">
-                        <button type="submit" class="btn-send">
-                            <span>▶</span> Envoyer
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn-pro flex-grow-1 py-3">
+                            <i class="bi bi-shield-lock-fill me-2"></i>CONFIRMER L'ENVOI SÉCURISÉ
                         </button>
-                        <a href="dashboard.php" class="btn-cancel">Annuler</a>
+                        <a href="dashboard.php" class="btn btn-pro-outline py-3 px-4">RETOUR</a>
                     </div>
                 </form>
             </div>
         </div>
 
-        <!-- Right Column: Vulnerability Lab -->
-        <div class="vuln-panel vuln-panel-transfer">
-            <div class="vuln-header">
-                <span class="shield-icon">🛡</span>
-                <h3>Labo Vulnérabilités</h3>
-            </div>
-
-            <!-- 1. Montant négatif -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-yellow"></span>
-                    <span class="label-text text-yellow"><span class="vuln-step-number">1. Montant négatif</span></span>
+        <!-- LAB Integration Column -->
+        <div class="col-lg-4">
+            <div class="pro-card border-2 border-primary border-dashed bg-pro-soft h-100 p-4">
+                <h6 class="fw-bold text-pro-primary mb-4"><i class="bi bi-mortarboard-fill me-2"></i>LAB: VÉRIFICATION ROBUSTE</h6>
+                
+                <div class="mb-4">
+                    <label class="x-small fw-bold text-uppercase tracking-widest text-pro-muted d-block mb-2">1. Test IDOR (Manipulation d'ID)</label>
+                    <p class="x-small text-pro-muted leading-relaxed">Tentez de débiter le compte #1 (Admin) en injectant un champ caché. Robuste ignore les entrées client pour l'ID source.</p>
+                    <button class="btn btn-pro-outline btn-sm w-100" onclick="injectIDOR()">
+                        <i class="bi bi-bug me-1"></i> INJECTER CHAMP `from_user_id`
+                    </button>
                 </div>
-                <p class="vuln-desc">Essayez de saisir <span class="vuln-code-inline">-100</span> comme montant.</p>
-            </div>
 
-            <!-- 2. Modifier le compte source -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-red"></span>
-                    <span class="label-text text-red"><span class="vuln-step-number">2. Modifier le compte source</span></span>
+                <div class="mb-4">
+                    <label class="x-small fw-bold text-uppercase tracking-widest text-pro-muted d-block mb-2">2. Test Race Condition</label>
+                    <p class="x-small text-pro-muted leading-relaxed">Envoie 5 requêtes simultanées de 10k <?php echo CURRENCY; ?>. Robuste utilise des verrous atomiques pour empêcher le solde négatif.</p>
+                    <button class="btn btn-pro-outline btn-sm w-100" id="raceBtn" onclick="runRaceCondition()">
+                        <i class="bi bi-lightning-charge me-1"></i> TESTER DÉBIT MULTIPLE
+                    </button>
                 </div>
-                <p class="vuln-desc">Ouvrez DevTools (F12), modifiez le champ caché <span class="vuln-code-inline">from_user_id</span> pour débiter un autre compte.</p>
-            </div>
 
-            <!-- 3. Race condition -->
-            <div class="vuln-section">
-                <div class="vuln-label">
-                    <span class="dot dot-green"></span>
-                    <span class="label-text text-green"><span class="vuln-step-number">3. Race condition</span></span>
+                <div class="mt-auto p-3 bg-white rounded border-pro opacity-75 text-center">
+                    <a href="lab.php" class="text-pro-primary x-small fw-bold text-decoration-none"><i class="bi bi-arrow-right-circle me-1"></i>VOIR TOUS LES TESTS DU LAB</a>
                 </div>
-                <p class="vuln-desc">Envoie plusieurs transferts simultanés pour dépasser le solde.</p>
-                <button class="btn-race" onclick="raceConditionAttack()">
-                    ⚡ Attaque race condition
-                </button>
             </div>
-
-            <div class="vuln-footer">Environnement de test isolé</div>
         </div>
     </div>
+</div>
 
-    <script>
-        document.getElementById('transferForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
-            const messageDiv = document.getElementById('message');
+<!-- Overlays -->
+<div id="paymentOverlay" class="pro-overlay">
+    <div>
+        <span class="loader-pro mb-4"></span>
+        <h4 class="fw-bold text-pro-primary">Traitement en cours...</h4>
+        <p class="text-pro-muted small">Sécurisation de la transaction avec votre opérateur</p>
+    </div>
+</div>
 
-            try {
-                const response = await fetch('../api/transfer/send.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
+<div id="receiptOverlay" class="pro-overlay" style="display: none; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);">
+    <div class="pro-card bg-white p-5 text-center" style="max-width: 450px; width: 90%;">
+        <div class="mb-4">
+            <i class="bi bi-patch-check-fill text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h3 class="fw-bold text-pro-text mb-2">TRANSFERT RÉUSSI</h3>
+        <p class="text-pro-muted small mb-4">Votre argent a été envoyé en toute sécurité.</p>
+        
+        <div id="receiptContent" class="text-start bg-pro-soft p-4 rounded-pro mb-4">
+            <!-- Dynamic Content -->
+        </div>
 
-                if (result.success) {
-                    messageDiv.className = 'alert-modern alert-success';
-                    messageDiv.textContent = '✓ ' + result.message;
-                    this.reset();
-                } else {
-                    messageDiv.className = 'alert-modern alert-danger';
-                    messageDiv.textContent = '✕ ' + result.message;
-                }
-            } catch (error) {
-                messageDiv.className = 'alert-modern alert-danger';
-                messageDiv.textContent = '✕ Erreur lors du transfert';
-            }
-        });
+        <button onclick="location.reload()" class="btn-pro w-100 py-3">OK, COMPRIS</button>
+    </div>
+</div>
 
-        function raceConditionAttack() {
-            const amount = 500;
-            const promises = [];
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/pro.js"></script>
+<script>
+    const BANK_FEE_PERCENT = <?php echo BANK_FEE_PERCENT; ?>;
+    const CURRENCY = '<?php echo CURRENCY; ?>';
 
-            for (let i = 0; i < 5; i++) {
-                const formData = new FormData();
-                formData.append('to_user_id', '2');
-                formData.append('amount', amount);
-                formData.append('description', `Race condition test ${i + 1}`);
-                promises.push(fetch('../api/transfer/send.php', {
-                    method: 'POST',
-                    body: formData
-                }));
-            }
+    function updateFeeDisplay() {
+        const amount = parseFloat(document.getElementById('amount').value) || 0;
+        const fee = amount * BANK_FEE_PERCENT;
+        const total = amount + fee;
+        
+        document.getElementById('fee_display').textContent = `${fee.toLocaleString()} ${CURRENCY}`;
+        document.getElementById('total_display').textContent = `${total.toLocaleString()} ${CURRENCY}`;
+    }
 
-            Promise.all(promises).then(results => {
-                alert(`${results.length} transferts envoyés simultanément !`);
-                setTimeout(() => location.reload(), 2000);
+    document.getElementById('transferForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const msgDiv = document.getElementById('message');
+        msgDiv.style.display = 'none';
+
+        const overlay = document.getElementById('paymentOverlay');
+        overlay.style.display = 'flex';
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const response = await fetch('../api/transfer/send.php', {
+                method: 'POST',
+                body: formData
             });
+            const result = await response.json();
+            
+            overlay.style.display = 'none';
+
+            if (result.success) {
+                showReceipt(result);
+            } else {
+                msgDiv.className = 'alert alert-danger border-0 small';
+                msgDiv.textContent = result.message;
+                msgDiv.style.display = 'block';
+                window.scrollTo({top: 0, behavior: 'smooth'});
+            }
+        } catch (error) {
+            overlay.style.display = 'none';
+            msgDiv.className = 'alert alert-danger border-0 small';
+            msgDiv.textContent = 'Erreur critique lors du transfert réseau.';
+            msgDiv.style.display = 'block';
+        }
+    });
+
+    function showReceipt(data) {
+        const content = document.getElementById('receiptContent');
+        const now = new Date().toLocaleString('fr-FR');
+        
+        content.innerHTML = `
+            <div class="receipt-line">
+                <span class="text-pro-muted">Date</span>
+                <span class="fw-bold">${now}</span>
+            </div>
+            <div class="receipt-line">
+                <span class="text-pro-muted">Méthode</span>
+                <span class="fw-bold">${data.method}</span>
+            </div>
+            <div class="receipt-line">
+                <span class="text-pro-muted">Destinataire (ID)</span>
+                <span class="fw-bold">Client #${document.getElementById('to_user_id').value}</span>
+            </div>
+            <div class="receipt-line">
+                <span class="text-pro-muted">Référence</span>
+                <span class="fw-bold">${document.getElementById('description').value || 'N/A'}</span>
+            </div>
+            <div class="receipt-total">
+                <div class="receipt-line pb-2">
+                    <span class="text-pro-muted">Sous-total</span>
+                    <span>${data.subtotal.toLocaleString()} ${CURRENCY}</span>
+                </div>
+                <div class="receipt-line pb-2">
+                    <span class="text-pro-muted">Frais Bancaires (1%)</span>
+                    <span class="text-danger">${data.fee.toLocaleString()} ${CURRENCY}</span>
+                </div>
+                <div class="receipt-line pt-2 border-top">
+                    <span class="fw-bold">Total Déduit</span>
+                    <span class="text-pro-primary fw-bold" style="font-size: 1.3rem;">${data.total.toLocaleString()} ${CURRENCY}</span>
+                </div>
+            </div>
+            <div class="mt-3 text-center">
+                <p class="x-small text-pro-muted fst-italic">Transaction ID: ${data.transaction_id || 'ROBUSTE-' + Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+            </div>
+        `;
+        
+        document.getElementById('receiptOverlay').style.display = 'flex';
+    }
+    function injectIDOR() {
+        const form = document.getElementById('transferForm');
+        let input = document.getElementById('idor_input');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'from_user_id';
+            input.id = 'idor_input';
+            form.appendChild(input);
+        }
+        input.value = '1'; // Target Admin Account
+        
+        const msgDiv = document.getElementById('message');
+        msgDiv.className = 'alert alert-primary border-0 small';
+        msgDiv.textContent = 'Payload IDOR Injecté (from_user_id=1). Testez l\'envoi.';
+        msgDiv.style.display = 'block';
+    }
+
+    async function runRaceCondition() {
+        const raceBtn = document.getElementById('raceBtn');
+        raceBtn.disabled = true;
+        const amount = 10000;
+        const promises = [];
+        
+        for (let i = 0; i < 5; i++) {
+            const formData = new FormData();
+            formData.append('to_user_id', '2');
+            formData.append('amount', amount);
+            formData.append('description', 'Race Condition Test');
+            
+            promises.push(fetch('../api/transfer/send.php', {
+                method: 'POST',
+                body: formData
+            }).then(r => r.json()));
         }
 
-        function logout() {
-            fetch('../api/auth/logout.php').then(() => {
-                window.location.href = 'index.php';
-            });
-        }
-    </script>
+        const results = await Promise.all(promises);
+        console.table(results);
+        
+        const successCount = results.filter(r => r.success).length;
+        const msgDiv = document.getElementById('message');
+        msgDiv.className = successCount > 1 ? 'alert alert-danger' : 'alert alert-info';
+        msgDiv.textContent = `Race Condition : ${successCount} transaction(s) réussie(s) sur 5. (Si 1 seule, le système est ROBUSTE)`;
+        msgDiv.style.display = 'block';
+        raceBtn.disabled = false;
+    }
+</script> 
 </body>
 </html>

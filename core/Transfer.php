@@ -1,56 +1,82 @@
 <?php
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../core/Wallet.php';
+require_once __DIR__ . '/../config/database.php'; 
+require_once __DIR__ . '/../config/constants.php'; 
+require_once __DIR__ . '/Wallet.php'; 
+require_once __DIR__ . '/Auth.php'; 
 
-class Transfer {
-    private $db;
-    private $wallet;
+class Transfer { 
+private $db; 
+private $wallet; 
 
-    public function __construct() {
-        $this->db = new Database();
-        $this->wallet = new Wallet();
+public function __construct() { 
+$this->db = new Database(); 
+$this->wallet = new Wallet(); 
+    } 
+
+    // Secure Transfer with atomic updates and fees
+    public function sendMoney($fromUserId, $toUserId, $amount, $description = '', $paymentMethod = 'Transfer') 
+    { 
+        if ($amount <= 0) { 
+            return ['success' => false, 'message' => 'Montant invalide']; 
+        } 
+
+        $conn = $this->db->getConnection();
+        mysqli_begin_transaction($conn);
+
+        try {
+            // 1. Calculate fee
+            $fee = $amount * BANK_FEE_PERCENT;
+            $totalDebit = $amount + $fee;
+
+            // 2. Atomic Debit (check balance in the same query)
+            $sqlDebit = "UPDATE accounts SET balance = balance - ? WHERE user_id = ? AND balance >= ?";
+            $stmtDebit = $this->db->prepare($sqlDebit);
+            $this->db->execute($stmtDebit, [$totalDebit, $fromUserId, $totalDebit], "did");
+
+            if (mysqli_stmt_affected_rows($stmtDebit) === 0) {
+                throw new Exception("Solde insuffisant ou erreur de compte");
+            }
+
+            // 3. Credit recipient
+            $sqlCredit = "UPDATE accounts SET balance = balance + ? WHERE user_id = ?";
+            $stmtCredit = $this->db->prepare($sqlCredit);
+            $this->db->execute($stmtCredit, [$amount, $toUserId], "di");
+
+            if (mysqli_stmt_affected_rows($stmtCredit) === 0) {
+                throw new Exception("Destinataire introuvable");
+            }
+
+            // 4. Log Transaction (v2)
+            $senderAcc = $this->wallet->getBalance($fromUserId);
+            $receiverAcc = $this->wallet->getBalance($toUserId);
+            $senderAccountId = $senderAcc['id'] ?? 0;
+            $receiverAccountId = $receiverAcc['id'] ?? 0;
+
+            $sqlLog = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, from_account_id, to_account_id, amount, fee, description, payment_method, status)  
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+            $stmtLog = $this->db->prepare($sqlLog);
+            $this->db->execute($stmtLog, [$fromUserId, $toUserId, $senderAccountId, $receiverAccountId, $amount, $fee, $description, $paymentMethod, 'completed'], "iiiiddsss"); 
+
+            $transactionId = mysqli_insert_id($conn);
+
+            // 5. Audit Log
+            $auth = new Auth();
+            $auth->logEvent($fromUserId, "TRANSFER_SENT", "Transfer of $amount to User #$toUserId (Fee: $fee)");
+
+            mysqli_commit($conn);
+            return [ 
+                'success' => true, 
+                'transaction_id' => $transactionId, 
+                'message' => 'Transfert effectué avec succès',
+                'amount' => $amount,
+                'subtotal' => $amount,
+                'fee' => $fee,
+                'total' => $totalDebit,
+                'method' => $_POST['method_name'] ?? 'Transfert'
+            ]; 
+        } catch (Throwable $e) {
+            if (isset($conn)) mysqli_rollback($conn);
+            return ['success' => false, 'message' => $e->getMessage()]; 
+        }
     }
-
-    // Version 1 - Transfert avec multiples vulnérabilités
-    public function sendMoney($fromUserId, $toUserId, $amount, $description = '') {
-        // VULNÉRABILITÉ 1 : Pas de validation du montant (peut être négatif)
-        if ($amount == 0) {
-            return ['success' => false, 'message' => 'Montant invalide'];
-        }
-
-        // VULNÉRABILITÉ 2 : Vérification de solde non atomique (race condition)
-        $senderWallet = $this->wallet->getBalance($fromUserId);
-
-        if ($senderWallet && $senderWallet['balance'] < $amount) {
-            return ['success' => false, 'message' => 'Solde insuffisant'];
-        }
-
-        // VULNÉRABILITÉ 3 : Pas de transaction SQL (atomicité)
-        // Si le processus s'interrompt entre ces requêtes, l'argent disparaît ou se duplique
-        $newSenderBalance = $senderWallet['balance'] - $amount;
-        $sql1 = "UPDATE wallets SET balance = $newSenderBalance WHERE user_id = $fromUserId";
-        $this->db->query($sql1);
-
-        $receiverWallet = $this->wallet->getBalance($toUserId);
-        $newReceiverBalance = $receiverWallet['balance'] + $amount;
-        $sql2 = "UPDATE wallets SET balance = $newReceiverBalance WHERE user_id = $toUserId";
-        $this->db->query($sql2);
-
-        // Enregistrement de la transaction
-        $sql3 = "INSERT INTO transactions (from_user_id, to_user_id, amount, description, status)
-                 VALUES ($fromUserId, $toUserId, $amount, '$description', 'completed')";
-
-        $result = $this->db->query($sql3);
-
-        if ($result) {
-            return [
-                'success' => true,
-                'transaction_id' => mysqli_insert_id($this->db->getConnection()),
-                'message' => 'Transfert effectué'
-            ];
-        }
-
-        return ['success' => false, 'message' => 'Erreur lors du transfert'];
-    }
-}
-?>
+} 
