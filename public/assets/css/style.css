@@ -1,0 +1,500 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+/* 
+ * style.css - Pure Pro FinTech_Vulnerable (Minimalist SaaS Aesthetic) 
+ * Focus: Clarity, Professionalism, White/Blue Palette
+ */
+
+:root {
+    /* Ultra-Premium Arctic Palette */
+    --pro-primary: #2563eb;
+    --pro-primary-glow: rgba(37, 99, 235, 0.15);
+    --pro-bg: #f8fafc;
+    --pro-surface: rgba(255, 255, 255, 0.82);
+    --pro-text: #0f172a;
+    --pro-text-muted: #64748b;
+    --pro-border: rgba(255, 255, 255, 0.6);
+    --pro-border-card: rgba(226, 232, 240, 0.8);
+
+    /* Spacing & Radius */
+    --radius-pro: 32px;
+    --radius-inner: 20px;
+    --spacing-pro: 40px;
+    --transition-pro: 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+
+    /* Liquid Shadows */
+    --shadow-premium: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+    --shadow-float: 0 20px 50px -12px rgba(15, 23, 42, 0.08);
+}
+
+body {
+    background-color: var(--pro-bg);
+    background-image:
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.03) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(37, 99, 235, 0.03) 0px, transparent 50%);
+    overflow-x: hidden;
+}
+
+/* Noise/Grain for Texture */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.02;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+}
+
+/* Background "Wow" Mesh */
+.bg-mesh {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: -1;
+    background-image:
+        radial-gradient(circle at 15% 25%, hsla(215, 100%, 50%, 0.03) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, hsla(215, 100%, 50%, 0.03) 0%, transparent 45%);
+    animation: mesh-rotate 40s linear infinite;
+}
+
+@keyframes mesh-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--pro-bg);
+    color: var(--pro-text);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+.pro-brand {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: var(--pro-text);
+    letter-spacing: -0.02em;
+}
+
+/* Layout Containers */
+.pro-card {
+    background: var(--pro-surface);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--pro-border-card);
+    border-radius: var(--radius-pro);
+    padding: var(--spacing-pro);
+    box-shadow: var(--shadow-premium);
+    transition: var(--transition-pro);
+    position: relative;
+    z-index: 10;
+}
+
+.pro-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-float);
+    border-color: var(--pro-primary);
+}
+
+/* Internal Glow */
+.pro-card::after {
+    content: '';
+    position: absolute;
+    inset: 1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.pro-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: 0.5s;
+    pointer-events: none;
+}
+
+.pro-card:hover::before {
+    left: 100%;
+}
+
+/* Buttons */
+.btn-pro {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    background-color: var(--pro-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition-pro);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-pro:hover {
+    background-color: hsl(215, 100%, 40%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-pro-outline {
+    background-color: transparent;
+    border: 1px solid var(--pro-border);
+    color: var(--pro-text);
+}
+
+.btn-pro-outline:hover {
+    background-color: var(--pro-primary-soft);
+    border-color: var(--pro-primary);
+    color: var(--pro-primary);
+}
+
+/* Navbar */
+.navbar-pro {
+    background: var(--pro-surface);
+    border-bottom: 1px solid var(--pro-border);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.pro-brand {
+    font-size: 1.4rem;
+    color: var(--pro-primary);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Forms */
+.form-group-pro {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.form-label-pro {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--pro-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+    transition: var(--transition-pro);
+}
+
+.form-control-pro {
+    width: 100%;
+    padding: 16px 20px 16px 48px;
+    background: rgba(248, 250, 252, 0.5);
+    border: 1px solid var(--pro-border-card);
+    border-radius: var(--radius-inner);
+    color: var(--pro-text);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: var(--transition-pro);
+}
+
+.form-control-pro:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--pro-primary);
+    box-shadow: 0 0 0 4px var(--pro-primary-glow);
+    transform: translateY(-2px);
+}
+
+.input-icon {
+    position: absolute;
+    left: 18px;
+    top: 40px;
+    /* Adjusted for label */
+    color: var(--pro-primary);
+    font-size: 1.1rem;
+    transition: var(--transition-pro);
+    pointer-events: none;
+}
+
+.form-control-pro:focus+.input-icon {
+    transform: scale(1.1);
+}
+
+.input-group-pro {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-group-pro i {
+    position: absolute;
+    left: 16px;
+    z-index: 10;
+    pointer-events: none;
+    transition: var(--transition-pro);
+}
+
+.input-group-pro .form-control-pro {
+    padding-left: 45px;
+}
+
+.input-group-pro:focus-within i {
+    color: var(--pro-primary) !important;
+}
+
+#toggle-auth:hover {
+    color: hsl(215, 100%, 40%) !important;
+    text-shadow: 0 0 10px var(--pro-primary-soft);
+}
+
+.tracking-widest {
+    letter-spacing: 0.1em;
+}
+
+.leading-relaxed {
+    line-height: 1.6;
+}
+
+.x-small {
+    font-size: 0.7rem;
+}
+
+/* Tables */
+.table-pro {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-pro th {
+    background-color: var(--pro-bg);
+    color: var(--pro-text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--pro-border);
+}
+
+.table-pro td {
+    padding: 16px;
+    border-bottom: 1px solid var(--pro-border);
+    font-size: 0.95rem;
+}
+
+.table-pro tr:hover td {
+    background-color: var(--pro-primary-soft);
+}
+
+/* Utilities */
+.text-pro-primary {
+    color: var(--pro-primary);
+}
+
+.text-pro-muted {
+    color: var(--pro-text-muted);
+}
+
+.bg-pro-soft {
+    background-color: var(--pro-primary-soft);
+}
+
+/* Animations */
+.animate-pro-fadein {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title-big {
+    font-size: 6rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    line-height: 1;
+    text-align: center;
+    background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.04em;
+    margin-bottom: 10px;
+}
+
+.hero-v-line {
+    width: 80px;
+    height: 4px;
+    background: var(--pro-primary);
+    margin: 20px auto;
+    border-radius: 2px;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    :root {
+        --pro-radius: 12px;
+    }
+
+    .container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .display-3 {
+        font-size: 2.5rem;
+    }
+
+    .pro-card {
+        padding: 24px;
+        margin-bottom: 16px;
+    }
+
+    .navbar-pro {
+        padding: 12px 0;
+    }
+
+    .pro-brand {
+        font-size: 1.1rem;
+    }
+
+    .btn-pro,
+    .btn-pro-outline {
+        padding: 14px 20px;
+        width: 100%;
+        display: block;
+        text-align: center;
+    }
+
+    .d-flex.gap-4 {
+        gap: 1.5rem !important;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+    }
+
+    .table-pro th,
+    .table-pro td {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Modal and Overlays for Payment Simulation */
+.pro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.pro-receipt-card {
+    background: white;
+    border: 1px solid var(--pro-border);
+    border-radius: var(--pro-radius);
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: var(--pro-shadow-lg);
+    text-align: left;
+}
+
+.receipt-line {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+}
+
+.receipt-total {
+    border-top: 1px dashed var(--pro-border);
+    padding-top: 15px;
+    margin-top: 15px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.loader-pro {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--pro-primary-soft);
+    border-bottom-color: var(--pro-primary);
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================================================= */
+/* FINTECH PRO vs VULNERABLE LAB - PRESENTATION MODE TOGGLE                  */
+/* By default, the app looks fully secure.                                   */
+/* Adding 'show-lab' to body reveals the vulnerabilities.                    */
+/* ========================================================================= */
+
+body:not(.show-lab) .lab-only { 
+    display: none !important; 
+}
+
+body.show-lab .pro-only { 
+    display: none !important; 
+}
