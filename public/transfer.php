@@ -22,10 +22,10 @@ if (!$auth->isLoggedIn()) {
 
 <nav class="navbar navbar-pro sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span></a>
+        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH</a>
         <div class="d-flex align-items-center gap-4">
-            <a href="lab.php" class="btn btn-primary btn-sm px-3 shadow-sm border-0" style="background: #2ecc71;">
-                <i class="bi bi-mortarboard-fill me-1"></i> SECURITY LAB
+            <a href="lab.php" class="btn btn-primary btn-sm px-3 shadow-sm border-0 lab-only" style="background: #2ecc71;">
+                <i class="bi bi-mortarboard-fill me-1"></i> LAB GUIDE
             </a>
             <a href="dashboard.php" class="text-pro-muted text-decoration-none small fw-bold">DASHBOARD</a>
             <a href="../api/auth/logout.php" class="text-pro-danger text-decoration-none small fw-bold">DÉCONNEXION</a>
@@ -69,15 +69,14 @@ if (!$auth->isLoggedIn()) {
                             <div class="form-group-pro">
                                 <label class="form-label-pro">ID Bénéficiaire</label>
                                 <input type="number" id="to_user_id" name="to_user_id" class="form-control-pro" placeholder="Ex: 2" required>
+                                <i class="bi bi-person input-icon text-pro-muted"></i>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group-pro">
                                 <label class="form-label-pro">Montant (<?php echo CURRENCY; ?>)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white border-pro text-pro-muted"><?php echo CURRENCY; ?></span>
-                                    <input type="number" id="amount" name="amount" step="1" class="form-control-pro" placeholder="0" required oninput="updateFeeDisplay()">
-                                </div>
+                                <input type="number" id="amount" name="amount" step="1" class="form-control-pro has-prefix" placeholder="0" required oninput="updateFeeDisplay()">
+                                <span class="input-prefix"><?php echo CURRENCY; ?></span>
                             </div>
                         </div>
                     </div>
@@ -109,7 +108,7 @@ if (!$auth->isLoggedIn()) {
         </div>
 
         <!-- LAB Integration Column -->
-        <div class="col-lg-4">
+        <div class="col-lg-4 lab-only">
             <div class="pro-card border-2 border-primary border-dashed bg-pro-soft h-100 p-4">
                 <h6 class="fw-bold text-pro-primary mb-4"><i class="bi bi-mortarboard-fill me-2"></i>LAB: VÉRIFICATION ROBUSTE</h6>
                 

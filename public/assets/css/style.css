@@ -228,6 +228,10 @@ h5,
     transition: var(--transition-pro);
 }
 
+.form-control-pro.has-prefix {
+    padding-left: 72px;
+}
+
 .form-control-pro:focus {
     outline: none;
     background: #fff;
@@ -247,10 +251,22 @@ h5,
     pointer-events: none;
 }
 
-.form-control-pro:focus+.input-icon {
-    transform: scale(1.1);
+.input-prefix {
+    position: absolute;
+    left: 18px;
+    top: 40px;
+    color: var(--pro-text-muted);
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: var(--transition-pro);
+    pointer-events: none;
 }
 
+.form-control-pro:focus+.input-icon,
+.form-control-pro:focus+.input-prefix {
+    color: var(--pro-primary);
+    transform: scale(1.1);
+}
 .input-group-pro {
     position: relative;
     display: flex;
@@ -483,4 +499,47 @@ h5,
     100% {
         transform: rotate(360deg);
     }
+}
+
+/* ============================================================
+ * MODE PRÉSENTATION — Système de bascule LAB / PRO
+ * Géré par pro.js via body.show-lab
+ * ============================================================ */
+
+/* Par défaut : éléments lab masqués (mode présentation) */
+.lab-only {
+    display: none !important;
+}
+
+/* Mode LAB activé : on révèle les éléments .lab-only */
+body.show-lab .lab-only {
+    display: block !important;
+}
+
+/* Liens / boutons .lab-only dans la navbar (display inline-flex) */
+body.show-lab a.lab-only,
+body.show-lab span.lab-only {
+    display: inline-flex !important;
+    align-items: center;
+}
+
+/* Éléments PRO-only : toujours visibles par défaut */
+.pro-only {
+    display: block;
+}
+
+/* Effet d'assombrissement temporaire lors de la bascule */
+body.lab-toggle-flash::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99999;
+    pointer-events: none;
+    animation: toggleFlash 0.6s ease-out forwards;
+}
+
+@keyframes toggleFlash {
+    0%   { opacity: 1; }
+    100% { opacity: 0; }
 }

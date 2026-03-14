@@ -47,15 +47,10 @@ $this->wallet = new Wallet();
             }
 
             // 4. Log Transaction (v2)
-            $senderAcc = $this->wallet->getBalance($fromUserId);
-            $receiverAcc = $this->wallet->getBalance($toUserId);
-            $senderAccountId = $senderAcc['id'] ?? 0;
-            $receiverAccountId = $receiverAcc['id'] ?? 0;
-
-            $sqlLog = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, from_account_id, to_account_id, amount, fee, description, payment_method, status)  
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+            $sqlLog = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, amount, fee, description, payment_method, status)  
+                       VALUES (?, ?, ?, ?, ?, ?, ?)"; 
             $stmtLog = $this->db->prepare($sqlLog);
-            $this->db->execute($stmtLog, [$fromUserId, $toUserId, $senderAccountId, $receiverAccountId, $amount, $fee, $description, $paymentMethod, 'completed'], "iiiiddsss"); 
+            $this->db->execute($stmtLog, [$fromUserId, $toUserId, $amount, $fee, $description, $paymentMethod, 'completed'], "iiddsss"); 
 
             $transactionId = mysqli_insert_id($conn);
 

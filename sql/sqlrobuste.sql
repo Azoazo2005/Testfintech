@@ -63,6 +63,8 @@ CREATE TABLE `transactions_v2` (
   `from_user_id` int(11) NOT NULL,
   `to_user_id` int(11) NOT NULL,
   `amount` decimal(15,2) NOT NULL,
+  `fee` decimal(15,2) DEFAULT 0.00,
+  `payment_method` varchar(50) DEFAULT 'Virement',
   `description` text DEFAULT NULL,
   `status` enum('pending','completed','failed') DEFAULT 'completed',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -100,10 +102,10 @@ CREATE TABLE `audit_logs` (
 
 -- Insertion des Utilisateurs
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `full_name`, `role`, `is_admin`, `balance`) VALUES
-(1, 'admin', 'admin@fintech.com', 'admin123', 'Administrateur Système', 'admin', 1, 97500.00),
-(2, 'alice', 'alice@example.com', 'password', 'Alice Martin', 'user', 0, 7300.00),
-(3, 'bob', 'bob@example.com', 'password', 'Bob Dupont', 'user', 0, 2000.00),
-(4, 'victim', 'victim@example.com', 'password', 'Victime Riche', 'user', 0, 15200.00);
+(1, 'admin', 'admin@fintech.com', '$2y$10$1hakaTpdgCniITqFTEPQm.PyMIct7DZhPi6NpBu7Pfgqw90MomFWq', 'Administrateur Système', 'admin', 1, 97500.00),
+(2, 'alice', 'alice@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Alice Martin', 'user', 0, 7300.00),
+(3, 'bob', 'bob@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Bob Dupont', 'user', 0, 2000.00),
+(4, 'victim', 'victim@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Victime Riche', 'user', 0, 15200.00);
 
 -- Insertion des Comptes
 INSERT INTO `accounts` (`id`, `user_id`, `account_number`, `balance`) VALUES

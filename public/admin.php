@@ -78,13 +78,20 @@ $currency = CURRENCY;
 
 <nav class="navbar navbar-pro sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span></a>
+        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH</a>
         <div class="d-flex align-items-center gap-4">
             <div class="d-flex align-items-center me-4">
-                <span class="badge bg-success bg-opacity-10 text-success border-success border px-3 py-2">
+                <!-- Mode PRO (présentation) -->
+                <span class="badge bg-success bg-opacity-10 text-success border-success border px-3 py-2 pro-only">
                     <i class="bi bi-lock-fill me-1"></i> SÉCURITÉ ACTIVE
                 </span>
+                <!-- Mode LAB -->
+                <span class="badge bg-danger bg-opacity-10 text-danger border-danger border px-3 py-2 lab-only">
+                    <i class="bi bi-eye-fill me-1"></i> Surveillance Active
+                </span>
             </div>
+            <a href="dashboard.php" class="text-pro-muted text-decoration-none small fw-bold">DASHBOARD</a>
+            <a href="transfer.php" class="text-pro-muted text-decoration-none small fw-bold">TRANSFERT</a>
             <a href="../api/auth/logout.php" class="text-pro-danger text-decoration-none small fw-bold ms-4">DÉCONNEXION</a>
         </div>
     </div>
@@ -215,7 +222,7 @@ $currency = CURRENCY;
 
 <footer class="footer mt-auto py-5 border-top border-pro">
     <div class="container text-center">
-        <p class="text-pro-muted x-small">&copy; 2026 FINTECH ROBUSTE SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
+        <p class="text-pro-muted x-small">&copy; 2026 FINTECH SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
     </div>
 </footer>
 

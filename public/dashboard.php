@@ -40,17 +40,18 @@ $currency = CURRENCY; // Use global currency constant
 
 <nav class="navbar navbar-pro sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="pro-brand" href="#"><i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span></a>
+        <a class="pro-brand" href="dashboard.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH</a>
         <div class="d-flex align-items-center gap-4">
             <span class="text-pro-muted small fw-medium"><i class="bi bi-person-circle me-1"></i> <?php echo htmlspecialchars($username); ?></span>
-            <a href="lab.php" class="btn btn-primary btn-sm px-3 shadow-sm border-0" style="background: #2ecc71;">
-                <i class="bi bi-mortarboard-fill me-1"></i> SECURITY LAB
+            <a href="lab.php" class="btn btn-primary btn-sm px-3 shadow-sm border-0 lab-only" style="background: #2ecc71;">
+                <i class="bi bi-mortarboard-fill me-1"></i> LAB GUIDE
             </a>
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
                 <a href="admin.php" class="btn btn-pro-outline btn-sm px-3">
                     <i class="bi bi-shield-lock me-1"></i>ADMIN
                 </a>
             <?php endif; ?>
+            <a href="transfer.php" class="text-pro-muted text-decoration-none small fw-bold">TRANSFERT</a>
             <a href="../api/auth/logout.php" class="text-pro-danger text-decoration-none small fw-bold">DÉCONNEXION</a>
         </div>
     </div>
@@ -134,7 +135,7 @@ $currency = CURRENCY; // Use global currency constant
                 <span class="text-pro-muted x-small">Dernière vérification : <?php echo date('H:i'); ?></span>
             </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 lab-only">
             <div class="pro-card border-2 border-primary border-dashed bg-white p-4 h-100">
                 <h6 class="fw-bold text-pro-primary mb-3 small"><i class="bi bi-mortarboard-fill me-2"></i>LAB: TEST PERSISTENT XSS</h6>
                 <p class="x-small text-pro-muted mb-2">Les descriptions de transactions sont désormais encodées. Injectez un payload pour vérifier.</p>
@@ -153,7 +154,7 @@ $currency = CURRENCY; // Use global currency constant
 
 <footer class="footer mt-auto py-5 border-top border-pro">
     <div class="container text-center">
-        <p class="text-pro-muted x-small">&copy; 2026 FINTECH ROBUSTE SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
+        <p class="text-pro-muted x-small">&copy; 2026 FINTECH SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
     </div>
 </footer>
 

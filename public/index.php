@@ -58,10 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <nav class="navbar navbar-pro sticky-top">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="pro-brand" href="index.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span></a>
-        <div>
+        <a class="pro-brand" href="index.php"><i class="bi bi-shield-check-fill me-2"></i>FINTECH</a>
+        <div class="lab-only">
             <a href="lab.php" class="btn btn-primary btn-sm px-4 shadow-sm border-0" style="background: #2ecc71; font-weight: 700;">
-                <i class="bi bi-mortarboard-fill me-1"></i> SECURITY LAB
+                <i class="bi bi-mortarboard-fill me-1"></i> LAB GUIDE
             </a>
         </div>
     </div>
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Top Tier: Hero Title -->
     <div class="row w-100 justify-content-center mb-5 animate-pro-fadein">
         <div class="col-lg-10 text-center mt-5">
-            <h1 class="hero-title-big">FINTECH<span style="color: #2ecc71;"> ROBUSTE</span></h1>
+            <h1 class="hero-title-big">FINTECH</h1>
             <div class="hero-v-line"></div>
             <p class="hero-subtitle-big">VOTRE PLATEFORME FINANCIÈRE SÉCURISÉE</p>
         </div>
@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             
             <!-- LAB INTEGRATION: LOGIN SQLi -->
-            <div class="mt-4 pro-card no-parallax p-4 border-2 border-primary border-dashed bg-pro-soft animate-pro-fadein" style="animation-delay: 0.3s;">
+            <div class="mt-4 pro-card no-parallax p-4 border-2 border-primary border-dashed bg-pro-soft animate-pro-fadein lab-only" style="animation-delay: 0.3s;">
                 <h6 class="fw-bold text-pro-primary mb-3"><i class="bi bi-mortarboard-fill me-2"></i>LAB: TENTATIVE D'INJECTION SQL</h6>
                 <p class="x-small text-pro-muted mb-3">Tentez de contourner l'authentification avec un payload classique.</p>
                 <div class="d-flex gap-2 mb-3">
@@ -214,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 
                 <div class="d-flex justify-content-between align-items-center opacity-75">
-                    <p class="mb-0 x-small fw-bold text-pro-muted"># FINTECH ROBUSTE SYSTEM</p>
+                    <p class="mb-0 x-small fw-bold text-pro-muted"># FINTECH SYSTEM</p>
                     <p class="mb-0 x-small fw-bold text-pro-muted">SÉCURITÉ GARANTIE</p>
                 </div>
             </div>
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <footer class="text-center mt-5 pt-4">
-        <p class="text-pro-muted x-small">&copy; <?php echo date('Y'); ?> FINTECH ROBUSTE SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
+        <p class="text-pro-muted x-small">&copy; <?php echo date('Y'); ?> FINTECH SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
     </footer>
 </div>
 

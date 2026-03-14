@@ -55,8 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $db->query("UPDATE accounts SET balance = balance + $amount WHERE id = $recipientId");
 
         // Log transaction (Standardizing on transactions_v2 columns)
-        $logSql = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, from_account_id, to_account_id, amount, description, status) 
-                    VALUES ($from_user_id, $to_user_id, $senderId, $recipientId, $amount, '$description', 'completed')";
+        $logSql = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, amount, description, status) 
+                    VALUES ($from_user_id, $to_user_id, $amount, '$description', 'completed')";
         $logResult = $db->query($logSql);
 
         if (!$logResult) {

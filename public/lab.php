@@ -160,7 +160,7 @@ $is_logged = $auth->isLoggedIn();
 <nav class="navbar navbar-expand-lg navbar-light sticky-top shadow-sm" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(0,0,0,0.05);">
     <div class="container">
         <a class="navbar-brand fw-bold" href="dashboard.php" style="color: #0f172a;">
-            <i class="bi bi-shield-lock-fill me-2" style="color: #2563eb;"></i>FINTECH <span style="color: #2563eb;">ROBUSTE</span> LAB
+            <i class="bi bi-shield-lock-fill me-2" style="color: #2563eb;"></i>FINTECH <span style="color: #2563eb;">LAB</span>
         </a>
         <div class="ms-auto d-flex align-items-center gap-3">
             <a href="index.php" class="btn btn-link text-dark text-decoration-none small fw-bold opacity-75">ACCUEIL</a>
@@ -392,7 +392,7 @@ $is_logged = $auth->isLoggedIn();
 
 <div class="bg-dark text-white py-5">
     <div class="container text-center">
-        <p class="small mb-2 opacity-50">&copy; 2026 FINTECH ROBUSTE SOLUTIONS - LABORATOIRE DE RECHERCHE</p>
+        <p class="small mb-2 opacity-50">&copy; 2026 FINTECH SOLUTIONS - LABORATOIRE DE RECHERCHE</p>
         <div class="d-flex justify-content-center gap-4 small fw-bold tracking-widest text-uppercase">
             <a href="#" class="text-info text-decoration-none">Audit Report</a>
             <a href="#" class="text-info text-decoration-none">Defense Matrix</a>

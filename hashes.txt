@@ -1,0 +1,2 @@
+admin123: $2y$10$vT7604c63jLG/7lDd1t6A.27Oc0soJlmslE0HNieq4luiagMtqf9q
+password: $2y$10$XENPMU44nml1pBOhejW9V.7gm.xUy7Wf0Ocn5kP8YJfa.UsQLZdhi

@@ -23,7 +23,7 @@ if ($auth->isLoggedIn()) {
     <div class="col-md-6 col-lg-5 animate-pro-fadein">
         <div class="text-center mb-5">
             <h1 class="pro-brand justify-content-center mb-2">
-                <i class="bi bi-shield-check-fill me-2"></i>FINTECH<span class="fw-normal text-pro-muted"> ROBUSTE</span>
+                <i class="bi bi-shield-check-fill me-2"></i>FINTECH
             </h1>
             <p class="text-pro-muted small text-uppercase tracking-widest">Rejoignez une plateforme sécurisée</p>
         </div>
@@ -61,7 +61,7 @@ if ($auth->isLoggedIn()) {
         </div>
 
         <footer class="text-center mt-5">
-            <p class="text-pro-muted x-small">&copy; 2026 FINTECH ROBUSTE SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
+            <p class="text-pro-muted x-small">&copy; 2026 FINTECH SOLUTIONS. TOUS DROITS RÉSERVÉS.</p>
         </footer>
     </div>
 </div>
