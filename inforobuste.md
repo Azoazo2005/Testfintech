@@ -58,3 +58,21 @@ Le nom de l'application a été standardisé à **FINTECH** partout (navbars, ti
 | `public/lab.php` | Navbar (`FINTECH LAB`), copyright footer |
 
 > Les mentions techniques comme *"Défense Robuste"*, *"Standard Robuste"* ou *"le système est ROBUSTE"* ont été conservées car elles décrivent des concepts de sécurité, pas le nom de l'app.
+
+---
+
+## 4. Correction de la Base de Données & Hachage des mots de passe
+
+Afin d'assurer que l'application soit déployable immédiatement après un clonage du dépôt git sans erreur de connexion ou de requêtes, le fichier d'initialisation SQL (`sql/sqlrobuste.sql`) et la logique de transaction ont été corrigés :
+
+- **Hachage des mots de passe par défaut** : Les requêtes d'insertion dans le fichier SQL pour les comptes par défaut (`admin`, `alice`, `bob`, `victim`) hachent désormais directement leur mot de passe via Bcrypt. Ceci corrige le bug de "mot de passe incorrect" où les anciens mots de passe étaient en texte brut mais le script de connexion PHP vérifiait avec `password_verify()`. Le login admin fonctionne maintenant avec `admin123` et pour les autres `password`.
+- **Ajout des colonnes manquantes** : Les colonnes `fee` et `payment_method` manquantes dans la table `transactions_v2` (qui causaient des crashs sur le tableau de bord Admin) ont été proprement ajoutées dans le schéma SQL.
+- **Requêtes de Transfert Compatibles** : Les requêtes d'insertion liées aux transferts (`core/Transfer.php` et `api/transfer/process.php`) ont été mises à jour pour respecter exactement les colonnes attendues par `transactions_v2`, ce qui a résolu l'erreur "Destinataire introuvable".
+
+---
+
+## 5. Alignements Visuels "PRO" (Formulaire de Transfert)
+
+Des correctifs CSS ont été apportés pour parfaire l'apparence "PRO" :
+- Résolution du problème de chevauchement du texte sur l'insigne FCFA dans le champ montant grâce à la création d'un prefix modificateur `.has-prefix` dans `style.css`.
+- Remplacement du groupe d'input standard de Bootstrap sur la page de transfert (`transfer.php`) par une iconographie et un alignement conformes à l'esthétique générale de la plateforme (suppression de l'arrière-plan gris inutile).
