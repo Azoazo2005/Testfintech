@@ -122,8 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cheat code 1 : Ctrl + Maj + E
     document.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
+        if (e.ctrlKey && e.shiftKey && (e.key === 'E' || e.key === 'e' || e.code === 'KeyE')) {
             e.preventDefault();
+            console.log('Toggle Lab Mode triggered');
             triggerLabToggle();
         }
     });

@@ -178,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <!-- Security Info Column -->
-        <div class="col-lg-5 animate-pro-fadein" style="animation-delay: 0.2s;">
+        <div class="col-lg-5 animate-pro-fadein lab-only" style="animation-delay: 0.2s;">
             <div class="pro-card p-4 border-pro bg-pro-soft h-100 shadow-sm border-2">
                 <div class="d-flex align-items-center mb-4">
                     <div class="bg-white rounded-circle p-2 me-3 border-pro shadow-sm">

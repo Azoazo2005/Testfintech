@@ -1,12 +1,24 @@
 <?php 
 require_once __DIR__ . '/../core/Auth.php'; 
 require_once __DIR__ . '/../config/constants.php'; 
+require_once __DIR__ . '/../config/database.php';
 session_start(); 
 $auth = new Auth(); 
 if (!$auth->isLoggedIn()) { 
     header('Location: index.php'); 
     exit; 
 } 
+
+// Fetch all other users for the dropdown
+$db = new Database();
+$currentUserId = $_SESSION['user_id'];
+$usersRes = $db->query("SELECT id, username, full_name FROM users WHERE id != $currentUserId ORDER BY username ASC");
+$availableUsers = [];
+if ($usersRes) {
+    while($row = $db->fetchOne($usersRes)) {
+        $availableUsers[] = $row;
+    }
+}
 ?> 
 <!DOCTYPE html>
 <html lang="fr">
@@ -67,8 +79,15 @@ if (!$auth->isLoggedIn()) {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group-pro">
-                                <label class="form-label-pro">ID Bénéficiaire</label>
-                                <input type="number" id="to_user_id" name="to_user_id" class="form-control-pro" placeholder="Ex: 2" required>
+                                <label class="form-label-pro">Bénéficiaire</label>
+                                <select id="to_user_id" name="to_user_id" class="form-control-pro" required style="appearance: none; -webkit-appearance: none;">
+                                    <option value="" disabled selected>Sélectionner un bénéficiaire</option>
+                                    <?php foreach ($availableUsers as $u): ?>
+                                        <option value="<?php echo $u['id']; ?>">
+                                            <?php echo htmlspecialchars($u['username']); ?> (<?php echo htmlspecialchars($u['full_name']); ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
                                 <i class="bi bi-person input-icon text-pro-muted"></i>
                             </div>
                         </div>
@@ -175,6 +194,8 @@ if (!$auth->isLoggedIn()) {
         document.getElementById('fee_display').textContent = `${fee.toLocaleString()} ${CURRENCY}`;
         document.getElementById('total_display').textContent = `${total.toLocaleString()} ${CURRENCY}`;
     }
+
+
 
     document.getElementById('transferForm').addEventListener('submit', async function(e) {
         e.preventDefault();
