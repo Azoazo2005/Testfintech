@@ -50,6 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="bg-pro">
 <div class="bg-mesh"></div>
 
+<nav class="navbar navbar-pro fixed-top">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="pro-brand" href="index.php"><i class="bi bi-snow2 me-2"></i>FINTECH</a>
+    </div>
+</nav>
+
 <div class="container min-vh-100 d-flex flex-column align-items-center justify-content-center py-5">
     <!-- Top Tier: Hero Title -->
     <div class="row w-100 justify-content-center mb-5 animate-pro-fadein">

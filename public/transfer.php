@@ -31,7 +31,7 @@ if (!$auth->isLoggedIn()) {
 </nav>
 
 <div class="container py-5 animate-pro-fadein">
-    <div class="row g-4">
+    <div class="row g-4 justify-content-center">
         <!-- New Transfer -->
         <div class="col-lg-6">
             <div class="pro-card">
@@ -62,8 +62,18 @@ if (!$auth->isLoggedIn()) {
                     </div>
 
                     <div class="form-group-pro">
-                        <label class="form-label-pro">Opérateur Destinataire (ID)</label>
-                        <input type="number" id="to_user_id" name="to_user_id" class="form-control-pro" placeholder="Ex: 2" required>
+                        <label class="form-label-pro">Opérateur Destinataire</label>
+                        <select id="to_user_id" name="to_user_id" class="form-control-pro" required>
+                            <option value="" disabled selected>Sélectionner un utilisateur</option>
+                            <?php
+                            $db = new Database();
+                            $usersResult = $db->query("SELECT id, username FROM users WHERE id != " . (int)$auth->getUserId());
+                            $usersList = $db->fetchAll($usersResult);
+                            foreach ($usersList as $u) {
+                                echo '<option value="' . htmlspecialchars($u['id']) . '">' . htmlspecialchars($u['username']) . '</option>';
+                            }
+                            ?>
+                        </select>
                         <div class="x-small text-pro-muted mt-2 lab-only">Nœuds détectés : 1 (admin), 2 (alice), 3 (bob), 4 (victim)</div>
                     </div>
                     
