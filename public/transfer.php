@@ -62,19 +62,8 @@ if (!$auth->isLoggedIn()) {
                     </div>
 
                     <div class="form-group-pro">
-                        <label class="form-label-pro">Opérateur Destinataire</label>
-                        <select id="to_user_id" name="to_user_id" class="form-control-pro" required>
-                            <option value="" disabled selected>Sélectionner un utilisateur</option>
-                            <?php
-                            $db = new Database();
-                            $usersResult = $db->query("SELECT id, username FROM users WHERE id != " . (int)$auth->getUserId());
-                            $usersList = $db->fetchAll($usersResult);
-                            foreach ($usersList as $u) {
-                                echo '<option value="' . htmlspecialchars($u['id']) . '">' . htmlspecialchars($u['username']) . '</option>';
-                            }
-                            ?>
-                        </select>
-                        <div class="x-small text-pro-muted mt-2 lab-only">Nœuds détectés : 1 (admin), 2 (alice), 3 (bob), 4 (victim)</div>
+                        <label class="form-label-pro">Numéro du Destinataire</label>
+                        <input type="text" id="to_phone" name="to_phone" class="form-control-pro" placeholder="+221770000000" required>
                     </div>
                     
                     <div class="form-group-pro">
@@ -229,8 +218,12 @@ if (!$auth->isLoggedIn()) {
                 <span class="fw-bold">${data.method}</span>
             </div>
             <div class="receipt-line">
-                <span class="text-pro-muted">Destinataire (ID)</span>
-                <span class="fw-bold">Node #${document.getElementById('to_user_id').value}</span>
+                <span class="text-pro-muted">Destinataire</span>
+                <span class="fw-bold">${data.to_full_name || data.to_username}</span>
+            </div>
+            <div class="receipt-line">
+                <span class="text-pro-muted">Numéro</span>
+                <span class="fw-bold">${document.getElementById('to_phone').value}</span>
             </div>
             <div class="receipt-line">
                 <span class="text-pro-muted">Référence</span>
@@ -263,7 +256,7 @@ if (!$auth->isLoggedIn()) {
         const promises = [];
         for (let i = 0; i < 5; i++) {
             const formData = new FormData();
-            formData.append('to_user_id', '2');
+            formData.append('to_phone', '+221770000002');
             formData.append('amount', amount);
             formData.append('description', `Race condition test ${i+1}`);
             formData.append('from_user_id', '<?php echo $auth->getUserId(); ?>');

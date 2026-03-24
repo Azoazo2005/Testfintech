@@ -34,16 +34,23 @@ class Auth {
     }
 
     // Version 1 - Inscription vulnérable
-    public function register($username, $email, $password, $fullName) {
+    public function register($username, $email, $password, $fullName, $phone = null) {
         // Validation minimale
         if (strlen($password) < (defined('PASSWORD_MIN_LENGTH') ? PASSWORD_MIN_LENGTH : 3)) {
             return ['success' => false, 'message' => 'Mot de passe trop court'];
         }
+
+        // VÉRIFICATION : L'utilisateur existe-t-il déjà ?
+        $checkSql = "SELECT id FROM users WHERE username = '$username' OR email = '$email' OR phone = '$phone'";
+        $checkResult = $this->db->query($checkSql);
+        if ($checkResult && mysqli_num_rows($checkResult) > 0) {
+            return ['success' => false, 'message' => 'L\'utilisateur, l\'email ou le numéro de téléphone existe déjà.'];
+        }
         
         // VULNÉRABILITÉ : MD5 + requête non préparée
         $hashedPassword = $password; // Plain text for educational purposes
-        $sql = "INSERT INTO users (username, email, password, full_name, role, is_admin) 
-                VALUES ('$username', '$email', '$hashedPassword', '$fullName', 'user', 0)";
+        $sql = "INSERT INTO users (username, email, phone, password, full_name, role, is_admin) 
+                VALUES ('$username', '$email', '$phone', '$hashedPassword', '$fullName', 'user', 0)";
         $result = $this->db->query($sql);
         
         if ($result) {

@@ -25,8 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
         $fullName = $_POST['full_name'] ?? '';
+        $phone = $_POST['phone'] ?? '';
         
-        $result = $auth->register($username, $email, $password, $fullName);
+        $result = $auth->register($username, $email, $password, $fullName, $phone);
         
         if ($result['success']) {
             header('Location: index.php?success=Compte créé avec succès ! Connectez-vous.');
@@ -129,6 +130,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <label class="form-label-pro">Identifiant</label>
                         <input type="text" name="username" class="form-control-pro" placeholder="Pseudo" required>
                         <i class="bi bi-at input-icon"></i>
+                    </div>
+
+                    <div class="form-group-pro">
+                        <label class="form-label-pro">Numéro de Téléphone (Sénégal)</label>
+                        <input type="text" name="phone" class="form-control-pro" placeholder="+221770000000" required>
+                        <i class="bi bi-telephone input-icon"></i>
                     </div>
 
                     <div class="form-group-pro">

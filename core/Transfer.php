@@ -44,8 +44,8 @@ if ($receiverWallet) {
         $senderAccountId = $senderAcc['id'] ?? 0;
         $receiverAccountId = $receiverAcc['id'] ?? 0;
 
-        $sql3 = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, from_account_id, to_account_id, amount, description, status)  
-                 VALUES ($fromUserId, $toUserId, $senderAccountId, $receiverAccountId, $amount, '$description', 'completed')"; 
+        $sql3 = "INSERT INTO " . TABLE_TRANSACTIONS . " (from_user_id, to_user_id, amount, description, status)  
+                 VALUES ($fromUserId, $toUserId, $amount, '$description', 'completed')"; 
         $result = $this->db->query($sql3); 
 
 if ($result) { 
