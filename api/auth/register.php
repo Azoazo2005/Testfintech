@@ -11,9 +11,10 @@ $username = $_POST['username'] ?? '';
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
 $fullName = $_POST['full_name'] ?? '';
+$phone = trim($_POST['phone'] ?? '');
 
 $auth = new Auth();
-$result = $auth->register($username, $email, $password, $fullName);
+$result = $auth->register($username, $email, $password, $fullName, $phone);
 
 if ($result['success']) {
     header('Location: ../../public/index.php?success=Account created! Please login.');

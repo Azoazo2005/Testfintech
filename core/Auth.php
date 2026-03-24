@@ -36,17 +36,25 @@ class Auth {
     }
 
     // Secure Registration
-    public function register($username, $email, $password, $fullName) {
+    public function register($username, $email, $password, $fullName, $phone = null) {
         if (strlen($password) < 8) {
             return ['success' => false, 'message' => 'Mot de passe trop court (min 8 caractères)'];
         }
         
+        // Check for existing user
+        $checkSql = "SELECT id FROM users WHERE username = ? OR email = ? OR phone = ?";
+        $checkStmt = $this->db->prepare($checkSql);
+        $checkRes = $this->db->execute($checkStmt, [$username, $email, $phone], "sss");
+        if ($checkRes && mysqli_num_rows($checkRes) > 0) {
+            return ['success' => false, 'message' => 'Ce nom d\'utilisateur, cet email ou ce téléphone est déjà utilisé'];
+        }
+
         // SECURITY: Hash password with Bcrypt
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         
-        $sql = "INSERT INTO users (username, email, password, full_name, role, is_admin) VALUES (?, ?, ?, ?, 'user', 0)";
+        $sql = "INSERT INTO users (username, email, password, full_name, phone, role, is_admin) VALUES (?, ?, ?, ?, ?, 'user', 0)";
         $stmt = $this->db->prepare($sql);
-        $result = $this->db->execute($stmt, [$username, $email, $hashedPassword, $fullName], "ssss");
+        $result = $this->db->execute($stmt, [$username, $email, $hashedPassword, $fullName, $phone], "sssss");
         
         if ($result) {
             $userId = mysqli_insert_id($this->db->getConnection());

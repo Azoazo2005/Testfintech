@@ -46,6 +46,10 @@ if ($auth->isLoggedIn()) {
                     <label class="form-label-pro">Nom Complet</label>
                     <input type="text" id="full_name" name="full_name" class="form-control-pro" placeholder="Prénom Nom" required>
                 </div>
+                <div class="form-group-pro">
+                    <label class="form-label-pro">Numéro de Téléphone</label>
+                    <input type="tel" id="phone" name="phone" class="form-control-pro" placeholder="+221770000000" pattern="^\+?[0-9]{9,15}$" required>
+                </div>
                 <div class="form-group-pro mb-4">
                     <label class="form-label-pro">Mot de Passe</label>
                     <input type="password" id="password" name="password" class="form-control-pro" placeholder="Sécurisez votre accès" required>

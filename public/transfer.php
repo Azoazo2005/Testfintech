@@ -9,16 +9,7 @@ if (!$auth->isLoggedIn()) {
     exit; 
 } 
 
-// Fetch all other users for the dropdown
-$db = new Database();
-$currentUserId = $_SESSION['user_id'];
-$usersRes = $db->query("SELECT id, username, full_name FROM users WHERE id != $currentUserId ORDER BY username ASC");
-$availableUsers = [];
-if ($usersRes) {
-    while($row = $db->fetchOne($usersRes)) {
-        $availableUsers[] = $row;
-    }
-}
+// The user selection dropdown is replaced by a phone number input
 ?> 
 <!DOCTYPE html>
 <html lang="fr">
@@ -79,16 +70,9 @@ if ($usersRes) {
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group-pro">
-                                <label class="form-label-pro">Bénéficiaire</label>
-                                <select id="to_user_id" name="to_user_id" class="form-control-pro" required style="appearance: none; -webkit-appearance: none;">
-                                    <option value="" disabled selected>Sélectionner un bénéficiaire</option>
-                                    <?php foreach ($availableUsers as $u): ?>
-                                        <option value="<?php echo $u['id']; ?>">
-                                            <?php echo htmlspecialchars($u['username']); ?> (<?php echo htmlspecialchars($u['full_name']); ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <i class="bi bi-person input-icon text-pro-muted"></i>
+                                <label class="form-label-pro">NUMÉRO DU DESTINATAIRE</label>
+                                <input type="tel" id="phone" name="phone" class="form-control-pro" placeholder="+221770000000" pattern="^\+?[0-9]{9,15}$" required>
+                                <i class="bi bi-phone input-icon text-pro-muted"></i>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -247,8 +231,12 @@ if ($usersRes) {
                 <span class="fw-bold">${data.method}</span>
             </div>
             <div class="receipt-line">
-                <span class="text-pro-muted">Destinataire (ID)</span>
-                <span class="fw-bold">Client #${document.getElementById('to_user_id').value}</span>
+                <span class="text-pro-muted">Destinataire</span>
+                <span class="fw-bold">${data.recipient_name || 'N/A'}</span>
+            </div>
+            <div class="receipt-line">
+                <span class="text-pro-muted">Numéro du Destinataire</span>
+                <span class="fw-bold">${document.getElementById('phone').value}</span>
             </div>
             <div class="receipt-line">
                 <span class="text-pro-muted">Référence</span>
@@ -301,7 +289,7 @@ if ($usersRes) {
         
         for (let i = 0; i < 5; i++) {
             const formData = new FormData();
-            formData.append('to_user_id', '2');
+            formData.append('phone', '+221770000000');
             formData.append('amount', amount);
             formData.append('description', 'Race Condition Test');
             

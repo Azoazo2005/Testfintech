@@ -19,6 +19,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `email` varchar(120) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `full_name` varchar(100) DEFAULT NULL,
   `role` enum('user','admin') DEFAULT 'user',
@@ -29,6 +30,7 @@ CREATE TABLE `users` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `phone` (`phone`),
   KEY `idx_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -101,11 +103,11 @@ CREATE TABLE `audit_logs` (
 -- 3. INSERTION DES DONNÉES
 
 -- Insertion des Utilisateurs
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `full_name`, `role`, `is_admin`, `balance`) VALUES
-(1, 'admin', 'admin@fintech.com', '$2y$10$1hakaTpdgCniITqFTEPQm.PyMIct7DZhPi6NpBu7Pfgqw90MomFWq', 'Administrateur Système', 'admin', 1, 97500.00),
-(2, 'alice', 'alice@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Alice Martin', 'user', 0, 7300.00),
-(3, 'bob', 'bob@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Bob Dupont', 'user', 0, 2000.00),
-(4, 'victim', 'victim@example.com', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Victime Riche', 'user', 0, 15200.00);
+INSERT INTO `users` (`id`, `username`, `email`, `phone`, `password`, `full_name`, `role`, `is_admin`, `balance`) VALUES
+(1, 'admin', 'admin@fintech.com', '+221781773637', '$2y$10$1hakaTpdgCniITqFTEPQm.PyMIct7DZhPi6NpBu7Pfgqw90MomFWq', 'Administrateur Système', 'admin', 1, 97500.00),
+(2, 'alice', 'alice@example.com', '+221763240218', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Alice Martin', 'user', 0, 7300.00),
+(3, 'bob', 'bob@example.com', '+221765550989', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Bob Dupont', 'user', 0, 2000.00),
+(4, 'victim', 'victim@example.com', '+221775049252', '$2y$10$.4iyZVKkv2fOfkZaQFyrAOcYf3ZhE6ByJEA.3SH7Cy.EWjopZzBte', 'Victime Riche', 'user', 0, 15200.00);
 
 -- Insertion des Comptes
 INSERT INTO `accounts` (`id`, `user_id`, `account_number`, `balance`) VALUES
